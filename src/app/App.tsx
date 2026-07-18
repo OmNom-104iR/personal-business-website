@@ -500,9 +500,33 @@ function Contact() {
   const [form, setForm] = useState({ name: "", email: "", service: "", message: "" });
   const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+
+    const payload = {
+      name: form.name,
+      email: form.email,
+      service: form.service,
+      _subject: `お問い合わせ：${form.name}`,
+      _replyto: form.email,
+      message: `お名前: ${form.name}\nメール: ${form.email}\nご希望のサービス: ${form.service}\n\nお問い合わせ内容:\n${form.message}`,
+    };
+
+    try {
+      const res = await fetch("https://formspree.io/f/mnjedalr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setSent(true);
+      } else {
+        console.error("Formspree error", res.status);
+      }
+    } catch (error) {
+      console.error("Formspree submit failed", error);
+    }
   };
 
   return (
@@ -521,12 +545,12 @@ function Contact() {
 
             <div className="space-y-4 mb-5 md:mb-10">
               <div className="flex items-center gap-4 text-sm">
-                <div className="w-10 h-10 border border-border flex items-center justify-center flex-shrink-0">
-                  <Mail size={16} />
-                </div>
+                <a href="mailto:okapy.1040107@icloud.com" className="w-10 h-10 border border-border flex items-center justify-center flex-shrink-0 hover:border-accent/50 transition-colors duration-200 group">
+                  <Mail size={16} className="group-hover:text-accent transition-colors duration-200" />
+                </a>
                 <div>
                   <div className="font-mono text-sm text-muted-foreground mb-0.5">Email</div>
-                  <span>hello@tanaka-design.jp</span>
+                  <a href="mailto:okapy.1040107@icloud.com" className="hover:text-accent transition-colors duration-200">okapy.1040107@icloud.com</a>
                 </div>
               </div>
             </div>
