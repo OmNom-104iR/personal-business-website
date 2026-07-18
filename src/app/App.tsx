@@ -38,6 +38,18 @@ const PROCESS_STEPS = [
   { num: "05", title: "公開・引き渡し", desc: "問題がないか確認してから公開。使い方もしっかりご説明します" },
 ];
 
+const SERVICE_OPTIONS = [
+  { value: "web", label: "ホームページを新しく作りたい" },
+  { value: "renewal", label: "今あるサイトをリニューアルしたい" },
+  { value: "maintenance", label: "更新・管理をお任せしたい" },
+  { value: "other", label: "まずは相談してみたい" },
+];
+
+const getServiceLabel = (value: string): string => {
+  const option = SERVICE_OPTIONS.find((opt) => opt.value === value);
+  return option ? option.label : value;
+};
+
 
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
@@ -499,17 +511,29 @@ function Process() {
 function Contact() {
   const [form, setForm] = useState({ name: "", email: "", service: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const formEl = e.target as HTMLFormElement;
+    if (!formEl.checkValidity()) {
+      const msg = "想定外のエラーが発生しました。\nお手数ですが、メールからお問い合わせください。";
+      setError(msg);
+      const firstInvalid = formEl.querySelector(':invalid') as HTMLElement | null;
+      firstInvalid?.focus();
+      return;
+    }
+
+    setError(null);
+
     const payload = {
       name: form.name,
       email: form.email,
-      service: form.service,
+      service: getServiceLabel(form.service),
       _subject: `お問い合わせ：${form.name}`,
       _replyto: form.email,
-      message: `お名前: ${form.name}\nメール: ${form.email}\nご希望のサービス: ${form.service}\n\nお問い合わせ内容:\n${form.message}`,
+      message: `お名前: ${form.name}\nメール: ${form.email}\nご希望のサービス: ${getServiceLabel(form.service)}\n\nお問い合わせ内容:\n${form.message}`,
     };
 
     try {
@@ -521,10 +545,31 @@ function Contact() {
 
       if (res.ok) {
         setSent(true);
+        setError(null);
       } else {
+        let errMsg = `送信に失敗しました（${res.status}）`;
+        try {
+          const data = await res.json();
+          if (data && data.errors && Array.isArray(data.errors)) {
+            const joined = data.errors.map((e: any) => e.message).join("、");
+            // サーバー側バリデーションによる "should be an email" の場合はカスタム文言に差し替える
+            const lower = joined.toLowerCase();
+            if (res.status === 422 || lower.includes("should be an email") || lower.includes("email")) {
+              errMsg = "想定外のエラーが発生しました。\nお手数ですが、メールからお問い合わせください。";
+            } else {
+              errMsg = joined;
+            }
+          } else if (data && data.message) {
+            errMsg = data.message;
+          }
+        } catch (e) {
+          // ignore json parse error
+        }
+        setError(errMsg);
         console.error("Formspree error", res.status);
       }
     } catch (error) {
+      setError("送信に失敗しました。ネットワークを確認してください。");
       console.error("Formspree submit failed", error);
     }
   };
@@ -582,7 +627,14 @@ function Contact() {
                 <p className="text-muted-foreground text-xs md:text-sm">2日以内にご返信します。</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+              <div>
+                {error && (
+                  <div className="border border-red-300 bg-red-50 text-red-700 p-4 mb-4">
+                    <strong className="block mb-1">送信エラー</strong>
+                    <div style={{ whiteSpace: "pre-line" }}>{error}</div>
+                  </div>
+                )}
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
                 {[
                   { key: "name", label: "お名前", type: "text", placeholder: "田中 花子" },
                   { key: "email", label: "メールアドレス", type: "email", placeholder: "hello@example.com" },
@@ -616,10 +668,11 @@ function Contact() {
                       required
                     >
                       <option value="">選択してください</option>
-                      <option value="web">ホームページを新しく作りたい</option>
-                      <option value="renewal">今あるサイトをリニューアルしたい</option>
-                      <option value="maintenance">更新・管理をお任せしたい</option>
-                      <option value="other">まずは相談してみたい</option>
+                      {SERVICE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
                     </select>
                     <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                   </div>
@@ -647,7 +700,8 @@ function Contact() {
                 <p className="text-center font-mono text-xs md:text-sm text-muted-foreground">
                   ※ご連絡いただいた情報は、お問い合わせ対応にのみ使用します。
                 </p>
-              </form>
+                </form>
+              </div>
             )}
           </div>
         </div>
