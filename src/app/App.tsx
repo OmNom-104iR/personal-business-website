@@ -211,7 +211,7 @@ function Hero() {
         >
           <img
             src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&h=800&fit=crop&auto=format"
-            alt="作業風景"
+            alt="Webデザイン-作業風景"
             className="w-full h-full object-cover"
           />
         </motion.div>
@@ -223,7 +223,7 @@ function Hero() {
         >
           <img
             src="https://images.unsplash.com/photo-1593425546383-260c8b86730b?w=600&h=800&fit=crop&auto=format"
-            alt="デザイン作業"
+            alt="Webデザイン-デザイン作業"
             className="w-full h-full object-cover"
           />
         </motion.div>
@@ -265,7 +265,7 @@ function Hero() {
               >
                 <img
                   src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&h=800&fit=crop&auto=format"
-                  alt="ノートPCで作業中"
+                  alt="Webデザイン-ノートPCで作業中"
                   className="w-full h-full object-cover"
                 />
               </motion.div>
@@ -278,7 +278,7 @@ function Hero() {
               >
                 <img
                   src="https://images.unsplash.com/photo-1523726491678-bf852e717f6a?w=600&h=800&fit=crop&auto=format"
-                  alt="デザインのスケッチ"
+                  alt="Webデザイン-デザインのスケッチ"
                   className="w-full h-full object-cover"
                 />
               </motion.div>
@@ -291,7 +291,7 @@ function Hero() {
               >
                 <img
                   src="https://images.unsplash.com/photo-1501163109389-abf37ca1276a?w=600&h=750&fit=crop&auto=format"
-                  alt="カフェで作業中"
+                  alt="Webデザイン-カフェで作業中"
                   className="w-full h-full object-cover"
                 />
               </motion.div>
@@ -404,10 +404,13 @@ function About() {
 
         {/* 写真 ｜ 本文＋ボタン */}
         <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-start">
-          <div className="relative aspect-[4/3] bg-secondary border border-border overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-mono text-xs text-muted-foreground tracking-widest">PHOTO</span>
-            </div>
+          <div className="relative aspect-[4/4] overflow-hidden border border-border">
+            <img
+              src="/myprofile_image.jpg"
+              alt="岡田 俊大"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: "center 30%" }}
+            />
             <div className="absolute top-4 right-4 w-10 h-10 border border-accent/25" />
             <div className="absolute bottom-4 left-4 font-mono text-xs text-muted-foreground/40">
               岡田 俊大 / Toshihiro Okada
