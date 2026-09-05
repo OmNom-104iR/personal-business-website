@@ -432,7 +432,7 @@ function About() {
           <div>
             <div className="space-y-7 md:space-y-6 text-sm md:text-base leading-relaxed md:leading-[2] text-muted-foreground mb-8 md:mb-12">
               <p>
-                飲食店や美容室など、地域のお店のホームページ制作・管理をお手伝いしています。
+                飲食店や美容室など、地域のお店のホームページ制作・管理をお手伝いさせていただきます。
               </p>
               <p>
                 「パソコンは苦手で…」「何を伝えればいいかわからない」という方でも大丈夫。難しい言葉は使わず、一つひとつていねいにご説明しながら進めます。
